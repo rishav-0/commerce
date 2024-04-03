@@ -23,4 +23,37 @@
 <h3>Owner: {{products.owner}}</h3>
 <h3>Price: {{products.price}}$</h3>
 
+<h3>Comments :</h3>
+   {% for comment in comments %}
+       <div class = "card mb-2 bg-light text-dark">
+           <div class="card-body">
+               <blockquote class="card-text">
+                   <footer class="blockquote-footer">Posted by {{comment.owner}}</footer>
+                   <p><strong>{{comment.message}}</strong></p>
+               </blockquote>
+           </div>
+       </div>
+   {% empty %}
+       <p>No comments yet.</p>
+   {% endfor %}
+
+{% if user.is_authenticated %}  
+     <div class="card">
+         <div class="card-body">
+             <form method="POST" action="{% url 'addComment' products.id %}">
+                 {% csrf_token %}
+                 <div class="form-group">
+                     <label for="inputTextarea">Your Comment:</label>
+                     <textarea class="form-control" name="comment" rows="3"></textarea>
+                 </div>
+                 <button type="submit" class="btn btn-primary">Submit</button>
+             </form>
+         </div>
+     </div>
+{% else %}
+     <a href="/login/" class="btn btn-outline-primary">Login to add a comment</a>
+{% endif %}
+
+
+
 {% endblock %}

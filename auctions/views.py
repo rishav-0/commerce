@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User,Listing,Category
+from .models import User,Listing,Category,Comment
 
 
 def index(request):
@@ -18,9 +18,11 @@ def index(request):
 def listing(request, id):
     procuctData = Listing.objects.get(pk=id)
     isWatchListed = request.user in procuctData.watchlist.all() if request.user else False
+    allComments = Comment.objects.filter(listing=procuctData)
     return  render(request,"auctions/listing.html",{
         "products":procuctData,
-        "watchStatus":isWatchListed 
+        "watchStatus":isWatchListed,
+        "comments":allComments
     })
 
 def addtoWatchlist(request, id):
@@ -39,8 +41,17 @@ def watchList(request):
     currentUser = request.user
     userProducts = currentUser.watchlist.all()
     return render(request,"auctions/watchlist.html",{   
-        "listings":userProducts
+        "listings":userProducts 
     })
+
+def addComment(request,id):
+    currentUser = request.user
+    productData = Listing.objects.get(pk=id)
+    commentText = request.POST['comment']
+    newComment = Comment(owner=currentUser,message=commentText,listing=productData)
+    newComment.save()
+    return HttpResponseRedirect(reverse('listing',args=(id, )))
+    
 
 def displaycategory(request):
     if request.method  == 'POST':
