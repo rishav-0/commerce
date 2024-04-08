@@ -10,10 +10,17 @@ class  Category(models.Model):
     def  __str__(self):
         return self.name
 
+class Bid(models.Model):
+    bidder = models.ForeignKey(User, on_delete = models.CASCADE, related_name="bidder",blank = True, null=True)
+    bid = models.FloatField(default=0)
+    
+    def   __str__(self): 
+         return f"{self.bid}"
+    
 class Listing(models.Model):
     title = models.CharField( max_length=50)
     description = models.TextField(max_length = 300)
-    price = models.FloatField()
+    price = models.ForeignKey(Bid, on_delete = models.CASCADE, related_name="bidamount",blank = True, null=True)
     imgUrl = models.URLField(null=True, blank=True)
     isActive = models.BooleanField(default= True)
     owner = models.ForeignKey(User, on_delete = models.CASCADE, related_name="user",blank = True, null=True)
@@ -29,3 +36,4 @@ class Comment(models.Model):
 
     def   __str__(self): 
           return f"{self.owner} commented on  {self.listing}"
+    

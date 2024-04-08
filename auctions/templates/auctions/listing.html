@@ -1,18 +1,49 @@
 {% extends "auctions/layout.html" %} {% block body %}
 
+{% if message %}
+    <div class="alert alert-success alert-dismissible">
+        <a href="{% url 'listing' id=products.id %}" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>{{message}}</strong> 
+    </div>
+{% endif %}
+
+{% if message and isOwner %}
+    <div class="alert alert-success alert-dismissible">
+        <a href="{% url 'listing' id=products.id %}" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>{{message}}</strong> 
+    </div>
+{% endif %}
+
+{% if not products.isActive and user == products.price.bidder %}  
+    <div class="alert alert-success alert-dismissible">
+        <strong>Congratulations! you won the Bid</strong> 
+    </div>
+{% endif %}
 <div class="container">
-  {% if user.is_authenticated %} 
-    {% if watchStatus %} 
-        <form  method="POST" action="{% url "removeFromWatchlist" id=products.id %}"> 
+  {% if user.is_authenticated %}
+    <div class="row">
+        {% if isOwner and products.isActive %}
+        <div class="col">
+          <form method="POST" action="{% url "closeAuction" id=products.id %}">
             {% csrf_token %}
-            <button type="submit" class ="btn btn-danger">Remove from Watchlist</button>
-        </form>
-        {% else %} 
-        <form  method="POST" action="{% url "addtoWatchlist" id=products.id %}" > 
+            <button type="submit" class="btn btn-danger">Close Auction</button>
+          </form>
+        </div>
+        {% endif %}
+        {% if watchStatus %}
+         <div class="col">
+          <form method="POST" action="{% url "removeFromWatchlist" id=products.id %}">
             {% csrf_token %}
-            <button type="submit" class ="btn btn-success">Add to Watchlist</button>
-        </form>
-    {% endif %} 
+            <button type="submit" class="btn btn-danger">Remove from Watchlist</button>
+          </form>
+        {% else %}
+          <form method="POST" action="{% url "addtoWatchlist" id=products.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Add to Watchlist</button>
+          </form>
+        </div>
+        {% endif %}
+    </div>
   {% endif %}
 </div>
 
@@ -20,24 +51,24 @@
 <h1>{{products.title}}</h1>
 <img src="{{products.imgUrl}}" width="400" />
 <p>{{products.description}}</p>
-<h3>Owner: {{products.owner}}</h3>
-<h3>Price: {{products.price}}$</h3>
+<h5>Owner: {{products.owner}}</h5>
+<h5>Current Bid: {{products.price.bid}}$</h5>
 
-<h3>Comments :</h3>
-   {% for comment in comments %}
-       <div class = "card mb-2 bg-light text-dark">
-           <div class="card-body">
-               <blockquote class="card-text">
-                   <footer class="blockquote-footer">Posted by {{comment.owner}}</footer>
-                   <p><strong>{{comment.message}}</strong></p>
-               </blockquote>
-           </div>
-       </div>
-   {% empty %}
-       <p>No comments yet.</p>
-   {% endfor %}
+{% if user.is_authenticated and products.isActive %}
+<h5>Add bid</h5>
+    <form method="post" action="{% url "addBid" id=products.id %}">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+        <input type="number" min="{{products.price}}"  required="true"  name="bid" class="form-control" placeholder="Place your bid" aria-label="Recipient's username" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+            <button class="btn btn-outline-primary" type="submit">Bid</button>
+        </div>
+        </div>
+    </form>
+{% endif %}
 
 {% if user.is_authenticated %}  
+
      <div class="card">
          <div class="card-body">
              <form method="POST" action="{% url 'addComment' products.id %}">
@@ -51,9 +82,21 @@
          </div>
      </div>
 {% else %}
-     <a href="/login/" class="btn btn-outline-primary">Login to add a comment</a>
+     <a href="{% url 'login' %}" class="btn btn-outline-primary">Login to add a comment</a>
 {% endif %}
 
-
+<h5>Comments :</h5>
+   {% for comment in comments %}
+       <div class = "card mb-2 bg-light text-dark">
+           <div class="card-body">
+               <blockquote class="card-text">
+                   <footer class="blockquote-footer">Posted by {{comment.owner}}</footer>
+                   <p><strong>{{comment.message}}</strong></p>
+               </blockquote>
+           </div>
+       </div>
+   {% empty %}
+       <p>No comments yet.</p>
+   {% endfor %}
 
 {% endblock %}
