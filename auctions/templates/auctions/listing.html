@@ -19,14 +19,14 @@
         <strong>Congratulations! you won the Bid</strong> 
     </div>
 {% endif %}
-<div class="container">
+<div class="flex items-center justify-between my-3">
   {% if user.is_authenticated %}
     <div class="row">
         {% if isOwner and products.isActive %}
         <div class="col">
           <form method="POST" action="{% url "closeAuction" id=products.id %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Close Auction</button>
+            <button type="submit" class="btn btn-danger px-2 p-1 text-sm">Close Auction</button>
           </form>
         </div>
         {% endif %}
@@ -34,12 +34,12 @@
          <div class="col">
           <form method="POST" action="{% url "removeFromWatchlist" id=products.id %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Remove from Watchlist</button>
+            <button type="submit" class="btn btn-danger p-1 px-2 text-sm">Remove from Watchlist</button>
           </form>
         {% else %}
           <form method="POST" action="{% url "addtoWatchlist" id=products.id %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-success">Add to Watchlist</button>
+            <button type="submit" class="btn btn-success p-1 px-2  text-sm">Add to Watchlist</button>
           </form>
         </div>
         {% endif %}
@@ -47,21 +47,21 @@
   {% endif %}
 </div>
 
-<h4>Category: {{products.category}}</h4> 
-<h1>{{products.title}}</h1>
-<img src="{{products.imgUrl}}" width="400" />
-<p>{{products.description}}</p>
-<h5>Owner: {{products.owner}}</h5>
-<h5>Current Bid: {{products.price.bid}}$</h5>
+<h4 class="font-semibold text-lg">Category: {{products.category}}</h4> 
+<h1 class="text-xl font-semibold mb-2">{{products.title}}</h1>
+<img class="mb-2"  src="{{products.imgUrl}}" width="400" />
+<p class="font-semibold mb-2">{{products.description}}</p>
+<h5 class="font-semibold ">Owner: <span class="ms-2 font-normal text-lg text-slate-500">{{products.owner}}</span></h5>
+<h5 class="font-semibold  mb-2">Current Bid: <span class="ms-2 text-lg font-normal text-slate-500">${{products.price.bid}}</span> </h5>
 
 {% if user.is_authenticated and products.isActive %}
-<h5>Add bid</h5>
+<h5 class="font-semibold mb-2">Add bid</h5>
     <form method="post" action="{% url "addBid" id=products.id %}">
         {% csrf_token %}
         <div class="input-group mb-3">
         <input type="number" min="{{products.price}}"  required="true"  name="bid" class="form-control" placeholder="Place your bid" aria-label="Recipient's username" aria-describedby="basic-addon2">
         <div class="input-group-append">
-            <button class="btn btn-outline-primary" type="submit">Bid</button>
+            <button class="btn btn-dark" type="submit">Bid</button>
         </div>
         </div>
     </form>
@@ -69,7 +69,7 @@
 
 {% if user.is_authenticated %}  
 
-     <div class="card">
+     <div class="card mb-3">
          <div class="card-body">
              <form method="POST" action="{% url 'addComment' products.id %}">
                  {% csrf_token %}
@@ -77,7 +77,7 @@
                      <label for="inputTextarea">Your Comment:</label>
                      <textarea class="form-control" name="comment" rows="3"></textarea>
                  </div>
-                 <button type="submit" class="btn btn-primary">Submit</button>
+                 <button type="submit" class="btn btn-dark">Submit</button>
              </form>
          </div>
      </div>
@@ -85,7 +85,7 @@
      <a href="{% url 'login' %}" class="btn btn-outline-primary">Login to add a comment</a>
 {% endif %}
 
-<h5>Comments :</h5>
+<h5 class="mb-2 font-semibold text-lg">Comments :</h5>
    {% for comment in comments %}
        <div class = "card mb-2 bg-light text-dark">
            <div class="card-body">

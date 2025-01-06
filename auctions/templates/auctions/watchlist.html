@@ -1,5 +1,5 @@
 {% extends "auctions/layout.html" %} {% block body %}
-<h2>Watchlist</h2>
+<h2 class="font-semibold text-lg my-2">Watchlist</h2>
 <div class="row mx-3">
   {% for products in listings %}
   <div class="card mx-3" style="width: 18rem">
@@ -11,7 +11,7 @@
     <div class="card-body">
       <h5 class="card-title">{{products.title}}</h5>
       <p class="card-text">{{products.description}}</p>
-      <a href="{% url 'listing' id=products.id %}" class="btn btn-primary">
+      <a href="{% url 'listing' id=products.id %}" class="btn btn-dark px-2">
         {{products.price}}
       </a>
     </div>
